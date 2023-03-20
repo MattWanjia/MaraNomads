@@ -35,6 +35,7 @@ export default function ProductItem({item}) {
           let resp = (set(db_ref(database, 'CART/' + uid + '/' + item.id), {
             'id': item.id,
             'quantity': 1 + snapshot.val(),
+            'price' : item.price
           }).then(() => {
             message.success("Product Updated")
           }).catch((error) => {console.log(error)}));
@@ -63,7 +64,7 @@ export default function ProductItem({item}) {
               <p class='text-xs text-ellipsis overflow-hidden leading-3 text-green-600'>{item.description}</p>
             </div>
             <div class='w-full flex justify-center'>
-              <p class='text-xs font-bold text-blue-400'>KSHS {item.price}</p>
+              <p class='text-xs font-bold text-blue-400'>KES {item.price}</p>
             </div>
             <button class='bg-gray-400 m-1 rounded-md text-xs font-semibold hover:bg-green-600 p-1' onClick={addToCart}>ADD TO CART</button>
         </div>

@@ -10,7 +10,7 @@ import 'antd/dist/reset.css';
 
 export default function Cart() {
   const router = useRouter()
-  const [products, setProducts] = useState([])
+  const [products, setProducts] = useState({})
   const [total, setTotal] = useState(0)
   const [loading, setLoading] = useState(true)
 
@@ -46,7 +46,7 @@ export default function Cart() {
         setLoading(false)        
       })
     } , 2000)
-  }, [])
+  }, [products])
 
 
   const getTotal = () => {
@@ -69,20 +69,39 @@ export default function Cart() {
     return total
   }
 
+  const removeProduct = (id) => {
+    //products.remove(id)
+    delete products.id
+    //console.log(typeof(products))
+  }
+
+  const checkout = () => {
+
+  }
+
 
   return (
     <div class='w-screen h-screen bg-gray-100 flex items-center justify-center'>
       <div class='w-5/6 h-5/6 bg-white pl-2'>
           <div class='w-full h-10 flex flex-row items-center'>
-            <FaArrowLeft onClick={() => router.push('/')}/>
+            <FaArrowLeft class='cursor-pointer' onClick={() => router.push('/')}/>
             <p class='pl-2 font-semibold'>Continue Shopping</p>
           </div>
           <div class='w-full h-5/6 flex flex-row'>
             <div class='w-2/3 h-full p-3 flex flex-col space-y-2 overflow-y-auto'>
-              {products && Object.entries(products).map(([key,value]) => <CartItem item={value} key={key}/>)}
+              {products && Object.entries(products).map(([key,value]) => <CartItem item={value} key={key} removeProduct={removeProduct}/>)}
             </div>
-            <div class='w-1/3'>
-              CHECKOUT
+            <div class='w-1/3 flex flex-col p-2 space-y-2'>
+              <div class='w-full flex justify-center'><p class='text-2xl font-semibold'>CHECKOUT</p></div>
+              <div class='w-full flex flex-row'>
+                <p class='font-semibold'>TOTAL:&nbsp;</p>
+                <p class='font-semibold'>KES&nbsp;{total}</p>
+              </div>
+              <div class='w-full flex justify-center'>
+                <img class='w-1/4' src='mpesa.jpg'/>
+              </div>
+              <input class='p-1 border-2 border-gray-400 rounded-md' placeholder='254712345678'/>
+              <button onClick={checkout} class='p-1 bg-blue-400 rounded-md font-semibold'>PROCEED</button>
             </div>
           </div>
       </div>
