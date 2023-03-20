@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useContext} from 'react'
+import React, {useState, useEffect, useContext, useMemo} from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { initializeApp } from 'firebase/app'
@@ -13,7 +13,7 @@ import {
   signOut } from "firebase/auth";
 import { useDisclosure, Modal, ModalBody, ModalHeader, ModalContent, ModalOverlay, ModalCloseButton } from '@chakra-ui/react'
 import {BiLogIn, BiLogOut, BiCart, BiHistory} from 'react-icons/bi'
-import { message } from 'antd'
+import { message, Tooltip } from 'antd'
 import 'antd/dist/reset.css';
 import AuthContext from '../context/AuthProvider'
 
@@ -24,6 +24,19 @@ export default function Nav() {
     const [password, setPassword] = useState("")
     const router = useRouter()
     const [user, setUser] = useState([])
+    const options = ['Show', 'Hide', 'Center'];
+    const [arrow, setArrow] = useState('Show');
+  const mergedArrow = useMemo(() => {
+    if (arrow === 'Hide') {
+      return false;
+    }
+    if (arrow === 'Show') {
+      return true;
+    }
+    return {
+      pointAtCenter: true,
+    };
+  }, [arrow]);
     
     //const {user, setUser} = useContext(AuthContext);
 
@@ -69,6 +82,8 @@ export default function Nav() {
       const signInClicked = async () => {
         //console.log(email)
         const res = await signInWithEmailAndPassword(auth, email, password).then((res) => {
+          console.log(res)
+          window.localStorage.setItem('uid', res.user.uid)
           message.success("Welcome!")
           setIsAuthenticated(true)
         }).catch((err) => {
@@ -82,6 +97,7 @@ export default function Nav() {
       await signOut(auth).then((res) => {
           message.success("Goodbye!")
           setIsAuthenticated(false)
+          window.localStorage.setItem('uid', null)
       }).catch((err) => {
           message.error("Unknown error!")
       })
@@ -110,18 +126,18 @@ export default function Nav() {
   return (
     <div class='w-full h-12 bg-gray-400 flex flex-row flex items-center'>
         <div class='w-1/3 flex p-2 flex justify-center'>
-            <p onClick={() => router.push('/')} class='text-xs md:text-2xl font-semibold cursor-pointer'>MARTIN WANJIA STORE</p>
+            <p onClick={() => router.push('/')} class='text-xs md:text-2xl text-blue-600 font-semibold cursor-pointer'>MARTIN WANJIA STORE</p>
         </div>
         <div class='w-2/3 flex flex-row justify-end p-2'>
             <div class='flex justify-between w-1/2'>
                 {/*<p onClick={() => router.push('/cart')} class='cursor-pointer font-semibold'>CART</p>*/}
-                {<BiCart class='cursor-pointer' size={30} onClick={handleCart} />}
+                <Tooltip color={'gray'} placement='bottomRight' title="CART" arrow={mergedArrow}>{<BiCart class='cursor-pointer' size={30} onClick={handleCart} />}</Tooltip>
                 {/*<p onClick={() => router.push('/orders')} class='cursor-pointer font-semibold'>ORDERS</p>*/}
-                {<BiHistory class='cursor-pointer' size={30} onClick={handleOrders} />}
+                <Tooltip color={'gray'} placement='bottomRight' title="ORDERS" arrow={mergedArrow}>{<BiHistory class='cursor-pointer' size={30} onClick={handleOrders} />}</Tooltip>
                 {/*authenticated && <p class='cursor-pointer font-semibold'>SIGNOUT</p>*/}
-                {authenticated && <BiLogOut class='cursor-pointer' onClick={signOutUser} size={30}/>}
+                {authenticated && <Tooltip color={'gray'} placement='bottomRight' title="SIGNOUT" arrow={mergedArrow}><BiLogOut class='cursor-pointer' onClick={signOutUser} size={30}/></Tooltip>}
                 {/*!authenticated && <p onClick={onAddLoginOpen} class='cursor-pointer font-semibold'>SIGNIN</p>*/}
-                {!authenticated && <BiLogIn class='cursor-pointer' size={30} onClick={onAddLoginOpen}/>}
+                {!authenticated && <Tooltip color={'gray'} placement='bottomRight' title="LOGIN" arrow={mergedArrow}><BiLogIn class='cursor-pointer' size={30} onClick={onAddLoginOpen}/></Tooltip>}
             </div>
         </div>
         <Modal  isOpen={isAddLoginOpen} onClose={onAddLoginClose}>
