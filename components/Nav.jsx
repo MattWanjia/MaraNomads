@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react'
+import React, {useState, useEffect, useContext} from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { initializeApp } from 'firebase/app'
@@ -12,12 +12,20 @@ import {
   onAuthStateChanged,
   signOut } from "firebase/auth";
 import { useDisclosure, Modal, ModalBody, ModalHeader, ModalContent, ModalOverlay, ModalCloseButton } from '@chakra-ui/react'
+import {BiLogIn, BiLogOut, BiCart, BiHistory} from 'react-icons/bi'
+import { message } from 'antd'
+import 'antd/dist/reset.css';
+import AuthContext from '../context/AuthProvider'
+
 
 export default function Nav() {
     const [authenticated, setIsAuthenticated] = useState(false)
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
     const router = useRouter()
+    const [user, setUser] = useState([])
+    
+    //const {user, setUser} = useContext(AuthContext);
 
     const firebaseConfig = {
         apiKey: "AIzaSyCDe026gyC1C-eUBk3JJ-uRWZQGOkWxGv8",
@@ -30,21 +38,74 @@ export default function Nav() {
         measurementId: "G-37327RDMD4"
       };
 
+    const app = initializeApp(firebaseConfig);
+    //const analytics = getAnalytics(app);
+    const auth = getAuth(app);
+
+    useEffect(() => {
+      onAuthStateChanged(auth, (user1 => { 
+        setUser(user1);
+          try{
+          window.localStorage.setItem('uid', user1.uid)
+        }catch(err){
+          console.log(err)
+        }
+      }))
+    }, [user])
+
     const {isOpen:isAddLoginOpen, onOpen:onAddLoginOpen, onClose:onAddLoginClose} = useDisclosure()
 
     const registerClicked = async () => {
         //console.log(password)
-        const res = await createUserWithEmailAndPassword(auth, email, password)
+        const res = await createUserWithEmailAndPassword(auth, email, password).then((res) => {
+          message.success("Account Created")
+        }).catch((err) => {
+          message.error("Registration Failed")
+        })
         //console.log(res)
         onAddLoginClose();
       }
     
       const signInClicked = async () => {
         //console.log(email)
-        const res = await signInWithEmailAndPassword(auth, email, password)
+        const res = await signInWithEmailAndPassword(auth, email, password).then((res) => {
+          message.success("Welcome!")
+          setIsAuthenticated(true)
+        }).catch((err) => {
+          message.error("Login Failed. Please Confirm Credentials")
+        })
         //console.log(res);
         onAddLoginClose();
       }
+
+    const signOutUser = async () => {
+      await signOut(auth).then((res) => {
+          message.success("Goodbye!")
+          setIsAuthenticated(false)
+      }).catch((err) => {
+          message.error("Unknown error!")
+      })
+    }
+
+    const handleCart = () => {
+      console.log(user)
+
+      if(user == null){
+        message.info("Login to Continue")
+        onAddLoginOpen()
+      }else{
+        router.push("/cart")
+      }
+    }
+
+    const handleOrders = () => {
+      if(user == null){
+        message.info("Login to Continue")
+        onAddLoginOpen()
+      }else{
+        router.push("/orders")
+      }
+    }
 
   return (
     <div class='w-full h-12 bg-gray-400 flex flex-row flex items-center'>
@@ -53,10 +114,14 @@ export default function Nav() {
         </div>
         <div class='w-2/3 flex flex-row justify-end p-2'>
             <div class='flex justify-between w-1/2'>
-                {<p onClick={() => router.push('/cart')} class='cursor-pointer font-semibold'>CART</p>}
-                {<p onClick={() => router.push('/orders')} class='cursor-pointer font-semibold'>ORDERS</p>}
-                {authenticated && <p class='cursor-pointer font-semibold'>SIGNOUT</p>}
-                {!authenticated && <p onClick={onAddLoginOpen} class='cursor-pointer font-semibold'>SIGNIN</p>}
+                {/*<p onClick={() => router.push('/cart')} class='cursor-pointer font-semibold'>CART</p>*/}
+                {<BiCart class='cursor-pointer' size={30} onClick={handleCart} />}
+                {/*<p onClick={() => router.push('/orders')} class='cursor-pointer font-semibold'>ORDERS</p>*/}
+                {<BiHistory class='cursor-pointer' size={30} onClick={handleOrders} />}
+                {/*authenticated && <p class='cursor-pointer font-semibold'>SIGNOUT</p>*/}
+                {authenticated && <BiLogOut class='cursor-pointer' onClick={signOutUser} size={30}/>}
+                {/*!authenticated && <p onClick={onAddLoginOpen} class='cursor-pointer font-semibold'>SIGNIN</p>*/}
+                {!authenticated && <BiLogIn class='cursor-pointer' size={30} onClick={onAddLoginOpen}/>}
             </div>
         </div>
         <Modal  isOpen={isAddLoginOpen} onClose={onAddLoginClose}>
