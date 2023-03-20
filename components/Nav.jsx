@@ -110,7 +110,7 @@ export default function Nav() {
   return (
     <div class='w-full h-12 bg-gray-400 flex flex-row flex items-center'>
         <div class='w-1/3 flex p-2 flex justify-center'>
-            <p onClick={() => router.push('/')} class='text-2xl font-semibold cursor-pointer'>MARTIN WANJIA STORE</p>
+            <p onClick={() => router.push('/')} class='text-xs md:text-2xl font-semibold cursor-pointer'>MARTIN WANJIA STORE</p>
         </div>
         <div class='w-2/3 flex flex-row justify-end p-2'>
             <div class='flex justify-between w-1/2'>
