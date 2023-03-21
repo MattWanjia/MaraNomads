@@ -88,16 +88,12 @@ export default function Cart() {
     else{
       let URL = "https://maranomads-c45b7.ue.r.appspot.com/checkout"
 
-      let data = {
-        "order": window.localStorage.getItem("uid"),
-        "phone": phone
-      }
+      let datas = new FormData()
 
-      let HEADERS = {
-        "Content-Type": "application/json"
-      }
+      datas.append('order', window.localStorage.getItem("uid"))
+      datas.append('phone', phone)
 
-      axios.post(URL, data).then((res) => {
+      axios.post(URL, datas).then((res) => {
         console.log(res)
       }).catch((err) => {
         console.log(err)
