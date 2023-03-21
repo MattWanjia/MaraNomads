@@ -16,25 +16,26 @@ export default function Cart() {
   const [loading, setLoading] = useState(true)
   const [phone, setPhone] = useState(0)
 
-  useEffect(() => {
-    const storedUid = window.localStorage.getItem('uid')
-    const firebaseConfig = {
-      apiKey: "AIzaSyCDe026gyC1C-eUBk3JJ-uRWZQGOkWxGv8",
-      authDomain: "maranomads-c45b7.firebaseapp.com",
-      databaseURL: "https://maranomads-c45b7-default-rtdb.firebaseio.com",
-      projectId: "maranomads-c45b7",
-      storageBucket: "maranomads-c45b7.appspot.com",
-      messagingSenderId: "496579505547",
-      appId: "1:496579505547:web:a0b510e0fd8b556191138e",
-      measurementId: "G-37327RDMD4"
-    };
-    const app = initializeApp(firebaseConfig);
-    const db = db_ref(getDatabase(app))
+  const firebaseConfig = {
+    apiKey: "AIzaSyCDe026gyC1C-eUBk3JJ-uRWZQGOkWxGv8",
+    authDomain: "maranomads-c45b7.firebaseapp.com",
+    databaseURL: "https://maranomads-c45b7-default-rtdb.firebaseio.com",
+    projectId: "maranomads-c45b7",
+    storageBucket: "maranomads-c45b7.appspot.com",
+    messagingSenderId: "496579505547",
+    appId: "1:496579505547:web:a0b510e0fd8b556191138e",
+    measurementId: "G-37327RDMD4"
+  };
+  const app = initializeApp(firebaseConfig);
+  const database = getDatabase(app)
+  const db = db_ref(getDatabase(app))
+  const storedUid = window.localStorage.getItem('uid')
 
+
+  useEffect(() => {
     setTimeout(function(){
       get(child(db, `CART/${storedUid}`)).then((snapshot) => {
         if(snapshot.exists){
-          //console.log(snapshot.val())
           setProducts(snapshot.val())        
         }else{
           console.log("No products available")
@@ -77,6 +78,20 @@ export default function Cart() {
     //console.log(typeof(products))
   }
 
+  const clearCart = async () => {
+    /*await(remove((db_ref, `CART/${storedUid}`)).then(() => {
+      router.push('/')
+  })) */
+
+      const cartRef = db_ref(getDatabase(), `CART/${storedUid}`)
+
+      await remove(cartRef).then(() => {
+        router.push('/')
+      }).catch((err) => {
+
+      })
+  }
+
   const checkOut = () => {
     //console.log(phone[0])
 
@@ -95,6 +110,14 @@ export default function Cart() {
 
       axios.post(URL, datas).then((res) => {
         console.log(res)
+
+        if(res.status == 200){
+          setPhone(0)
+          clearCart()
+        }else{
+          message.error("Payment Rejected. Try again later")
+          setPhone(0)
+        }
       }).catch((err) => {
         console.log(err)
       })

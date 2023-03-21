@@ -135,11 +135,11 @@ export default function Nav() {
             <p onClick={() => router.push('/')} class='text-xs md:text-2xl text-blue-600 font-semibold cursor-pointer'>MARTIN WANJIA STORE</p>
         </div>
         <div class='w-2/3 flex flex-row justify-end p-2'>
-            <div class='flex justify-between w-1/2'>
+            <div class='flex justify-between w-1/4'>
                 {/*<p onClick={() => router.push('/cart')} class='cursor-pointer font-semibold'>CART</p>*/}
                 <Tooltip color={'gray'} placement='bottomRight' title="CART" arrow={mergedArrow}>{<BiCart class='cursor-pointer' size={30} onClick={handleCart} />}</Tooltip>
                 {/*<p onClick={() => router.push('/orders')} class='cursor-pointer font-semibold'>ORDERS</p>*/}
-                <Tooltip color={'gray'} placement='bottomRight' title="ORDERS" arrow={mergedArrow}>{<BiHistory class='cursor-pointer' size={30} onClick={handleOrders} />}</Tooltip>
+                {/*<Tooltip color={'gray'} placement='bottomRight' title="ORDERS" arrow={mergedArrow}>{<BiHistory class='cursor-pointer' size={30} onClick={handleOrders} />}</Tooltip>*/}
                 {/*authenticated && <p class='cursor-pointer font-semibold'>SIGNOUT</p>*/}
                 {authenticated && <Tooltip color={'gray'} placement='bottomRight' title="SIGNOUT" arrow={mergedArrow}><BiLogOut class='cursor-pointer' onClick={signOutUser} size={30}/></Tooltip>}
                 {/*!authenticated && <p onClick={onAddLoginOpen} class='cursor-pointer font-semibold'>SIGNIN</p>*/}
