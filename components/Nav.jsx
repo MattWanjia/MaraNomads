@@ -57,8 +57,13 @@ export default function Nav() {
 
     useEffect(() => {
       onAuthStateChanged(auth, (user1 => { 
+
+        console.log(user1)
+
+        if(user1 != null){
+          setIsAuthenticated(true)
+        }
         setUser(user1);
-        setIsAuthenticated(true)
           try{
           window.localStorage.setItem('uid', user1.uid)
         }catch(err){
