@@ -6,6 +6,7 @@ import { child, get, getDatabase, ref as db_ref, refFromURL, set, remove, update
 import { initializeApp } from 'firebase/app'
 import { message } from 'antd'
 import 'antd/dist/reset.css';
+import axios from 'axios'
 
 
 export default function Cart() {
@@ -13,6 +14,7 @@ export default function Cart() {
   const [products, setProducts] = useState({})
   const [total, setTotal] = useState(0)
   const [loading, setLoading] = useState(true)
+  const [phone, setPhone] = useState(0)
 
   useEffect(() => {
     const storedUid = window.localStorage.getItem('uid')
@@ -32,7 +34,7 @@ export default function Cart() {
     setTimeout(function(){
       get(child(db, `CART/${storedUid}`)).then((snapshot) => {
         if(snapshot.exists){
-          console.log(snapshot.val())
+          //console.log(snapshot.val())
           setProducts(snapshot.val())        
         }else{
           console.log("No products available")
@@ -55,7 +57,7 @@ export default function Cart() {
     for (const key in products){
 
       let item = products[key]
-      console.log(products[key])
+      //console.log(products[key])
 
       let price = item.price
       let quantity = item.quantity
@@ -63,7 +65,7 @@ export default function Cart() {
       let ptotal = price * quantity
       total += ptotal
       
-      console.log(total)
+      //console.log(total)
     }
     setTotal(total)
     return total
@@ -75,10 +77,33 @@ export default function Cart() {
     //console.log(typeof(products))
   }
 
-  const checkout = () => {
+  const checkOut = () => {
+    //console.log(phone[0])
 
+    if(phone.length < 12 ){
+      message.info("Confirm mobile number")
+    }else if(phone[0] != 2 && phone[1] != 5 && phone[2] != 4){
+      message.info("Confirm mobile number and try again")
+    }
+    else{
+      let URL = "https://maranomads-c45b7.ue.r.appspot.com/checkout"
+
+      let data = {
+        "order": window.localStorage.getItem("uid"),
+        "phone": phone
+      }
+
+      let HEADERS = {
+        "Content-Type": "application/json"
+      }
+
+      axios.post(URL, data).then((res) => {
+        console.log(res)
+      }).catch((err) => {
+        console.log(err)
+      })
+    }
   }
-
 
   return (
     <div class='w-screen h-screen bg-gray-100 flex items-center justify-center'>
@@ -100,8 +125,8 @@ export default function Cart() {
               <div class='w-full flex justify-center'>
                 <img class='w-1/4' src='mpesa.jpg'/>
               </div>
-              <input class='p-1 border-2 border-gray-400 rounded-md' placeholder='254712345678'/>
-              <button onClick={checkout} class='p-1 bg-blue-400 rounded-md font-semibold'>PROCEED</button>
+              <input type={'number'} class='p-1 border-2 border-gray-400 rounded-md' onChange={(e) => setPhone(e.target.value)} placeholder='254712345678'/>
+              <button onClick={checkOut} class='p-1 bg-blue-400 rounded-md font-semibold'>PROCEED</button>
             </div>
           </div>
       </div>

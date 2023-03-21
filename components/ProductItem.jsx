@@ -5,7 +5,7 @@ import { initializeApp } from 'firebase/app'
 import { getFirestore } from 'firebase/firestore'
 import { getDatabase, ref as db_ref, refFromURL, set, child, get } from 'firebase/database'
 
-export default function ProductItem({item}) {
+export default function ProductItem({item, isAuthenticated}) {
     const [uid, setUid] = useState("")
     const [previous, setPrevious] = useState(0)
 
@@ -30,25 +30,29 @@ export default function ProductItem({item}) {
     },[])
 
     const addToCart = async () => {
-      await get(child(db, `CART/${uid}/${item.id}/quantity`)).then((snapshot) => {
-        if(snapshot.exists){
-          let resp = (set(db_ref(database, 'CART/' + uid + '/' + item.id), {
-            'id': item.id,
-            'quantity': 1 + snapshot.val(),
-            'price' : item.price
-          }).then(() => {
-            message.success("Product Updated")
-          }).catch((error) => {console.log(error)}));
-        }
-        else{
-          let resp = (set(db_ref(database, 'CART/' + uid + '/' + item.id), {
-            'id': item.id,
-            'quantity': 1,
-          }).then(() => {
-            message.success("Product Added")
-          }).catch((error) => {console.log(error)}));
-        }
-      })
+      if(isAuthenticated){
+        await get(child(db, `CART/${uid}/${item.id}/quantity`)).then((snapshot) => {
+          if(snapshot.exists){
+            let resp = (set(db_ref(database, 'CART/' + uid + '/' + item.id), {
+              'id': item.id,
+              'quantity': 1 + snapshot.val(),
+              'price' : item.price
+            }).then(() => {
+              message.success("Product Updated")
+            }).catch((error) => {console.log(error)}));
+          }
+          else{
+            let resp = (set(db_ref(database, 'CART/' + uid + '/' + item.id), {
+              'id': item.id,
+              'quantity': 1,
+            }).then(() => {
+              message.success("Product Added")
+            }).catch((error) => {console.log(error)}));
+          }
+        })
+      }else{
+        message.info("Please log in to continue")
+      }
     }
 
   return (

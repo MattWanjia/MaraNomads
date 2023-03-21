@@ -58,7 +58,7 @@ export default function Nav() {
     useEffect(() => {
       onAuthStateChanged(auth, (user1 => { 
 
-        console.log(user1)
+        //console.log(user1)
 
         if(user1 != null){
           setIsAuthenticated(true)
