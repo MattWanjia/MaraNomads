@@ -74,6 +74,7 @@ export default function Nav() {
 
     const {isOpen:isAddLoginOpen, onOpen:onAddLoginOpen, onClose:onAddLoginClose} = useDisclosure()
 
+    //handles user registration
     const registerClicked = async () => {
         //console.log(password)
         const res = await createUserWithEmailAndPassword(auth, email, password).then((res) => {
@@ -85,6 +86,7 @@ export default function Nav() {
         onAddLoginClose();
       }
     
+      //handles user signin
       const signInClicked = async () => {
         //console.log(email)
         const res = await signInWithEmailAndPassword(auth, email, password).then((res) => {
@@ -99,6 +101,7 @@ export default function Nav() {
         onAddLoginClose();
       }
 
+      //handles user signout
     const signOutUser = async () => {
       await signOut(auth).then((res) => {
           message.success("Goodbye!")
@@ -109,6 +112,7 @@ export default function Nav() {
       })
     }
 
+    //handles cart icon clicked
     const handleCart = () => {
       console.log(user)
 
@@ -120,6 +124,7 @@ export default function Nav() {
       }
     }
 
+    //handle Order Icon clicked
     const handleOrders = () => {
       if(user == null){
         message.info("Login to Continue")
